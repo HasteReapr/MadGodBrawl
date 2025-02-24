@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RotmgClone": {
+      "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)"
+    }
+  }
+}
