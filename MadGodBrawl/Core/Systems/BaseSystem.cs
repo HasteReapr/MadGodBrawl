@@ -11,6 +11,14 @@ namespace Engine.Core.Systems
             components.Add(component);
         }
 
+        internal static void Initialize()
+        {
+            foreach (T component in components)
+            {
+                component.Initialize();
+            }
+        }
+
         internal static void PreUpdate(float deltaTime)
         {
             foreach(T component in components)

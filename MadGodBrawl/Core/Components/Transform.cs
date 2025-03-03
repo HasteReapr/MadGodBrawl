@@ -6,8 +6,8 @@ namespace Engine.Core.Components
 {
     internal class Transform : Component, IEquatable<Transform>
     {
-        internal Vector2 position = Vector2.Zero;
-        internal Vector2 scale = Vector2.Zero;
+        internal Vector3 position = Vector3.Zero;
+        internal Vector3 scale = Vector3.Zero;
         internal float layer = 0;
         internal float rotation = 0;
 
@@ -16,21 +16,21 @@ namespace Engine.Core.Components
             TransformSystem.Register(this);
         }
 
-        internal Vector2 CalculateDirection(InputBank.INPUTS input)
+        internal Vector3 CalculateDirection(InputBank.INPUTS input)
         {
-            Vector2 output = Vector2.Zero;
+            Vector3 output = Vector3.Zero;
             int leftRight = 0;
             int upDown = 0;
-            if ((input & INPUTS.KB_RIGHT) != 0)
+            if ((input & INPUTS.RIGHT) != 0)
                 leftRight += 1;
 
-            if ((input & INPUTS.KB_LEFT) != 0)
+            if ((input & INPUTS.LEFT) != 0)
                 leftRight -= 1;
 
-            if ((input & INPUTS.KB_DOWN) != 0)
+            if ((input & INPUTS.DOWN) != 0)
                 upDown += 1;
 
-            if ((input & INPUTS.KB_UP) != 0)
+            if ((input & INPUTS.UP) != 0)
                 upDown -= 1;
 
             output.X += leftRight;

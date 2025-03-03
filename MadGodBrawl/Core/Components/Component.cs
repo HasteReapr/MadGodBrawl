@@ -10,6 +10,10 @@ namespace Engine.Core.Components
     internal class Component
     {
         internal Entity entity;
+
+        // This is called once when the component is loaded, use this to store information in the component.
+        internal virtual void Initialize() { }
+
         //PreUpdate is the Update function that is called just before the Update function. This will contain small things in it.
         internal virtual void PreUpdate(float DeltaTime) { Update(DeltaTime); }
 

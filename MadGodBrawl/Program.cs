@@ -10,10 +10,9 @@ using System.Numerics;
 namespace Engine
 {
     internal class TransformSystem : BaseSystem<Transform> { };
-    internal class Sprite2DSystem : BaseSystem<Sprite2D> { };
-    internal class AnimatedSprite2DSystem : BaseSystem<AnimatedSprite2D> { };
     internal class InputBankSystem : BaseSystem<InputBank> { };
     internal class BasicMovementSystem : BaseSystem<BasicMovement> { };
+    internal class ModelRendererSystem : BaseSystem<ModelRenderer> { };
 
     internal enum GameStates : int
     {
@@ -31,7 +30,7 @@ namespace Engine
         internal static readonly int ScreenH = 1200;
         internal static readonly int ScreenW = 1600;
 
-        internal static Camera2D camera;
+        internal static Camera3D camera;
 
         internal static Player player;
 
@@ -50,11 +49,6 @@ namespace Engine
             {
                 deltaTime = GetFrameTime();
 
-                InputBankSystem.PreUpdate(deltaTime);
-                //Transform and things that change anything about an entity must be done before drawing.
-                BasicMovementSystem.PreUpdate(deltaTime);
-
-                //Anything that would mess with the camera should be done before the draw call.
                 Draw();
             }
 
@@ -63,42 +57,44 @@ namespace Engine
 
         public static void Initialize()
         {
-            SetTargetFPS(144);
+            //Since we are going to be locking the FPS
+            SetTargetFPS(60);
+
             player = new Player();
-            resourceManager = new ResourceManager();
 
-            camera = new();
+            camera = new Camera3D();
+            camera.Position = new Vector3(0f, 20, 200);
+            camera.Target = new Vector3(0f, 0f, 0f);
+            camera.Up = new Vector3(0f, 1f, 0f);
+            camera.FovY = 15;
+            camera.Projection = CameraProjection.Perspective;
 
-            var player_t = player.GetComponent<Transform>();
-            var player_spr = player.GetComponent<AnimatedSprite2D>();
-
-            camera.Target = new Vector2(player_t.position.X + player_spr.frameRec.Width/2, player_t.position.Y + player_spr.frameRec.Height/2);
-            camera.Offset = new Vector2(ScreenW / 2, ScreenH / 2);
-            camera.Rotation = 0.0f;
-            camera.Zoom = 4.0f;
+            TransformSystem.Initialize();
+            InputBankSystem.Initialize();
+            BasicMovementSystem.Initialize();
+            ModelRendererSystem.Initialize();
         }
 
         //This exists to kind of pull the drawing stuff outside of the main loop, so it's a bit easier to comprehend.
         public static void Draw()
         {
             BeginDrawing();
-            ClearBackground(Color.Gray);
+
+            ClearBackground(Color.RayWhite);
 
             //Start working within world space.
-            BeginMode2D(camera);
-            var player_t = player.GetComponent<Transform>();
-            var player_spr = player.GetComponent<AnimatedSprite2D>();
+            BeginMode3D(camera);
 
-            //We make the camera follow the player, its really strict and 1:1 right now, should be slowed and lerped a bit.
-            camera.Target = new Vector2(player_t.position.X + player_spr.frameRec.Width / 2, player_t.position.Y + player_spr.frameRec.Height / 2);
+            //DrawCube(new Vector3(-24, 3, 3), 6, 6, 6, Color.Gold);
 
-            //Sprites need to be updated last, after the begindrawing call.
-            //This goes for everything that is done for the visual things, like drawn models, shaders etc.
-            Sprite2DSystem.PreUpdate(deltaTime);
-            AnimatedSprite2DSystem.PreUpdate(deltaTime);
+            ModelRendererSystem.Update(deltaTime);
 
-            //Anything after this happens in screen space, instead of the world space.
-            EndMode2D();
+            //DrawCube(new Vector3(24, 3, 3), 6, 6, 6, Color.Red);
+
+            DrawGrid(180, 1);
+
+            //Anything after this happens in screen space, instead of the world space, which means its all 2D instead of 3D.
+            EndMode3D();
 
             DrawFPS(20, 20);
 

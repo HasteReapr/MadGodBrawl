@@ -23,11 +23,11 @@ namespace Engine.Core.Components
     internal class BasicMovement : Component, IEquatable<BasicMovement>
     {
         private float moveSpeed;
-        private Vector2 moveDir;
+        private Vector3 moveDir;
         internal BasicMovement(float moveSpeed)
         {
             this.moveSpeed = moveSpeed;
-            moveDir = Vector2.Zero;
+            moveDir = Vector3.Zero;
             BasicMovementSystem.Register(this);
         }
 
@@ -48,8 +48,8 @@ namespace Engine.Core.Components
 
             moveDir = t.CalculateDirection(input.inputReader);
 
-            Vector2 moveVec = moveDir * moveSpeed; //We multiply our speed by the movement direction, so we can move.
-            Vector2.Normalize(moveVec);
+            Vector3 moveVec = moveDir * moveSpeed; //We multiply our speed by the movement direction, so we can move.
+            Vector3.Normalize(moveVec);
 
             t.position += moveVec;
         }
