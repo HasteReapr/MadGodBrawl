@@ -48,7 +48,7 @@ namespace Engine
             while (!WindowShouldClose())
             {
                 deltaTime = GetFrameTime();
-
+                PreUpdate();
                 Draw();
             }
 
@@ -73,6 +73,21 @@ namespace Engine
             InputBankSystem.Initialize();
             BasicMovementSystem.Initialize();
             ModelRendererSystem.Initialize();
+        }
+
+        public static void PreUpdate()
+        {
+            TransformSystem.PreUpdate(deltaTime);
+            InputBankSystem.PreUpdate(deltaTime);
+            BasicMovementSystem.PreUpdate(deltaTime);
+            ModelRendererSystem.PreUpdate(deltaTime);
+
+            Update();
+        }
+
+        public static void Update()
+        {
+
         }
 
         //This exists to kind of pull the drawing stuff outside of the main loop, so it's a bit easier to comprehend.
